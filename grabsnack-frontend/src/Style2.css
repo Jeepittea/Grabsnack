@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css?family=Gudea:400,700');
+
+body{
+  margin:0;
+  font-family:'Gudea',sans-serif;
+
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:linear-gradient(135deg,#EA5C54 0%,#bb6dec 100%);
+}
+
+/* CARD */
+
+.login{
+
+  width:320px;
+
+  padding:40px;
+
+  border-top:2px solid #D8312A;
+
+  background:linear-gradient(45deg,#35394a 0%,#1f222e 100%);
+
+  box-shadow:0px 20px 30px rgba(0,0,0,0.55);
+  border-radius:8px;
+}
+
+/* TITLE */
+
+.login_title{
+  color:#ffffff;
+  font-size:20px;
+  text-align:center;
+  margin-bottom:25px;
+  line-height:1.4;
+}
+
+/* FORM */
+
+.login_fields{
+  margin-bottom:10px;
+}
+
+/* INPUT */
+
+.login_fields input{
+
+  width:100%;
+
+  background:#32364a;
+
+  padding:12px 15px;
+
+  border:none;
+  border-top:2px solid #393d52;
+  border-bottom:2px solid #393d52;
+
+  outline:none;
+
+  color:#afb1be;
+
+  font-family:'Gudea',sans-serif;
+  font-size:14px;
+
+  margin-bottom:14px;
+
+  box-sizing:border-box;
+}
+
+/* PASSWORD COLOR */
+
+.login_fields input[type="password"]{
+  color:#DC6180;
+}
+
+/* BUTTON AREA */
+
+.login_fields_submit{
+  margin-top:10px;
+  text-align:center;
+}
+
+/* BUTTON */
+
+.login_fields_submit input{
+
+  border-radius:50px;
+
+  background:transparent;
+
+  padding:10px 40px;
+
+  border:2px solid #DC6180;
+
+  color:#DC6180;
+
+  text-transform:uppercase;
+  font-size:12px;
+  font-weight:700;
+
+  transition:.2s;
+}
+
+/* BUTTON HOVER */
+
+.login_fields_submit input:hover{
+
+  background:#DC6180;
+  color:white;
+  cursor:pointer;
+}
+
+/* FORGOT PASSWORD */
+
+.forgot{
+  margin-top:10px;
+  text-align:right;
+  font-size:11px;
+}
+
+.forgot a{
+  color:#aeb1c4;
+  text-decoration:none;
+}
+
+/* REGISTER / LOGIN TEXT */
+
+.disclaimer{
+
+  margin-top:18px;
+
+  text-align:center;
+
+  font-size:12px;
+
+  color:#aeb1c4;
+}
+
+.disclaimer a{
+  color:#DC6180;
+  text-decoration:none;
+  font-weight:600;
+}
