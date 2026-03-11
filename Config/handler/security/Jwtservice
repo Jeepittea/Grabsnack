@@ -1,0 +1,47 @@
+package com.grabsnack.demo.security;
+
+import com.grabsnack.demo.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Map;
+
+@Service
+public class JwtService {
+
+    private final String SECRET_KEY = "secret-key-demo";
+
+    public String generateToken(Map<String, Object> claims, User user) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(user.getEmail())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes())
+                .compact();
+    }
+
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public boolean isTokenValid(String token, User user) {
+        String username = extractUsername(token);
+        return username.equals(user.getEmail()) && !isTokenExpired(token);
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY.getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+}
