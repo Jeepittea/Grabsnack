@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+# Ignore build files
+target/
+
+# Ignore logs
+*.log
+
+# Ignore IDE files
+.idea/
+
+# Ignore node stuff (just in case)
+node_modules/
