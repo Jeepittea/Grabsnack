@@ -2,6 +2,7 @@ package com.grabsnack.backend.service;
 
 import com.grabsnack.backend.dto.LoginRequest;
 import com.grabsnack.backend.dto.RegisterRequest;
+import com.grabsnack.backend.factory.UserFactory;
 import com.grabsnack.backend.model.User;
 import com.grabsnack.backend.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,26 +20,18 @@ public class AuthService {
 
     public String register(RegisterRequest request){
 
-        User user=new User(
-                request.getFullName(),
+        User user = UserFactory.createUser(
                 request.getEmail(),
-                encoder.encode(request.getPassword())
+                encoder.encode(request.getPassword()),
+                "USER"
         );
+
+        // If your User has fullName, set it separately
+        user.setFullName(request.getFullName());
 
         userRepository.save(user);
 
         return "User Registered";
-    }
-
-    public String login(LoginRequest request){
-
-        User user=userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
-
-        if(encoder.matches(request.getPassword(),user.getPassword()))
-            return "Login Successful";
-
-        return "Invalid Credentials";
 
     }
 
