@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk ':*)",
+      "Bash(grep -ohE \"@color/[a-z_]+\" F:/grabsnack-mobile/app/src/main/res/layout/activity_login.xml F:/grabsnack-mobile/app/src/main/res/layout/activity_register.xml F:/grabsnack-mobile/app/src/main/res/drawable/*.xml F:/grabsnack-mobile/app/src/main/res/values/themes.xml)",
+      "Read(//f//**)"
+    ]
+  }
+}

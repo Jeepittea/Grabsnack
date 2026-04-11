@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">GrabSnack</string>
+
+    <!-- Login screen -->
+    <string name="login_heading">Welcome Back Hungry?</string>
+    <string name="login_subheading">Login to GrabSnack</string>
+    <string name="btn_login">LOG IN</string>
+    <string name="no_account">New to GrabSnack? <b><font color="#E91E8C">Create an account</font></b></string>
+
+    <!-- Register screen -->
+    <string name="register_heading">Join GrabSnack \uD83C\uDF54</string>
+    <string name="register_subheading">Create your account</string>
+    <string name="btn_register">REGISTER</string>
+    <string name="has_account">Already have an account? <b><font color="#E91E8C">Login here</font></b></string>
+
+    <!-- Field labels -->
+    <string name="hint_email">Email address</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_full_name">Full name</string>
+
+    <!-- Legacy (keep for safety) -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="full_name">Full Name</string>
+
+    <!-- Validation / feedback -->
+    <string name="error_empty_fields">Please fill in all fields</string>
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="register_success">Registration successful! Please log in.</string>
+    <string name="error_network">Network error: %1$s</string>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <!-- Night mode: gradient auth screens look great already dark -->
+    <style name="Theme.GrabSnack" parent="Base.Theme.GrabSnack" />
+    <style name="Theme.GrabSnack.Auth" parent="Theme.GrabSnack">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+    </style>
+</resources>

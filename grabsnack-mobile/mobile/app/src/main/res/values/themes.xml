@@ -1,0 +1,121 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ══════════════════════════════════════════
+         App-wide base theme
+    ══════════════════════════════════════════ -->
+    <style name="Base.Theme.GrabSnack" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/brand_pink</item>
+        <item name="colorPrimaryVariant">@color/accent_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/brand_purple</item>
+        <item name="colorSurface">@color/card_background</item>
+        <item name="android:colorBackground">@color/background_dark</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/background_dark</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+    </style>
+
+    <style name="Theme.GrabSnack" parent="Base.Theme.GrabSnack" />
+
+    <!-- ══════════════════════════════════════════
+         Auth screens — transparent status bar so
+         gradient bleeds edge-to-edge
+    ══════════════════════════════════════════ -->
+    <style name="Theme.GrabSnack.Auth" parent="Theme.GrabSnack">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         Dashboard screen — solid status bar matching
+         header; accent color overridden to #DC6180
+    ══════════════════════════════════════════ -->
+    <style name="Theme.GrabSnack.Dashboard" parent="Theme.GrabSnack">
+        <item name="colorPrimary">@color/accent_pink</item>
+        <item name="colorPrimaryVariant">@color/accent_pink_dark</item>
+        <item name="android:statusBarColor">@color/card_background</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         Intermediate namespace roots — AAPT requires every
+         dot-notation segment to resolve to a real style.
+    ══════════════════════════════════════════ -->
+    <style name="Widget.GrabSnack" parent="" />
+    <style name="TextAppearance.GrabSnack" parent="TextAppearance.Material3.BodyMedium" />
+
+    <!-- ══════════════════════════════════════════
+         Dashboard: category filter chips
+    ══════════════════════════════════════════ -->
+    <style name="Widget.GrabSnack.CategoryChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_background_color</item>
+        <item name="android:textColor">@color/chip_text_color</item>
+        <item name="chipStrokeColor">@color/chip_stroke_color</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="checkedIconTint">@color/white</item>
+        <item name="android:minHeight">36dp</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         Reusable: Auth card (MaterialCardView)
+    ══════════════════════════════════════════ -->
+    <style name="Widget.GrabSnack.AuthCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/card_background</item>
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">16dp</item>
+        <item name="contentPadding">0dp</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         Reusable: Gradient pill button
+    ══════════════════════════════════════════ -->
+    <style name="Widget.GrabSnack.GradientButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:background">@drawable/gradient_button</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         Reusable: TextInputLayout (filled dark)
+    ══════════════════════════════════════════ -->
+    <style name="Widget.GrabSnack.TextInput" parent="Widget.Material3.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@color/input_background</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeColor">@color/brand_pink</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="hintTextColor">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="startIconTint">@color/text_secondary</item>
+        <item name="endIconTint">@color/text_secondary</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         Heading text on auth card
+    ══════════════════════════════════════════ -->
+    <style name="TextAppearance.GrabSnack.AuthHeading">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         Subheading text on auth card
+    ══════════════════════════════════════════ -->
+    <style name="TextAppearance.GrabSnack.AuthSubheading">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Brand gradient endpoints -->
+    <color name="brand_pink">#E91E8C</color>
+    <color name="brand_purple">#9C27B0</color>
+
+    <!-- Card / surface -->
+    <color name="card_background">#1A1A2E</color>
+    <color name="card_background_alt">#12122A</color>
+
+    <!-- Input fill -->
+    <color name="input_background">#2A2A3E</color>
+
+    <!-- Text -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0C0</color>
+    <color name="text_hint">#6E6E8A</color>
+
+    <!-- Icon tint inside inputs -->
+    <color name="icon_color">#B0B0C0</color>
+
+    <!-- Link / accent -->
+    <color name="accent">#E91E8C</color>
+    <color name="accent_dark">#C4176F</color>
+
+    <!-- Legacy aliases kept for other screens -->
+    <color name="background_dark">#0E0E1A</color>
+    <color name="surface_dark">#1A1A2E</color>
+    <color name="text_link">#E91E8C</color>
+
+    <!-- Dashboard accent (#DC6180 as requested) -->
+    <color name="accent_pink">#DC6180</color>
+    <color name="accent_pink_dark">#B84D68</color>
+</resources>
