@@ -12,6 +12,7 @@ function Login() {
     e.preventDefault();
 
     try {
+
       const response = await axios.post(
         "http://localhost:8080/api/auth/login",
         {
@@ -28,6 +29,14 @@ function Login() {
     }
   };
 
+
+  // GOOGLE LOGIN
+  const handleGoogleLogin = () => {
+    window.location.href =
+      "http://localhost:8080/oauth2/authorization/google";
+  };
+
+
   return (
     <div className="login">
 
@@ -39,7 +48,7 @@ function Login() {
 
       <form onSubmit={handleLogin} className="login_fields">
 
-        <div className="login_fields__user">
+        <div className="login_fields_user">
           <input
             type="text"
             placeholder="Email"
@@ -47,7 +56,7 @@ function Login() {
           />
         </div>
 
-        <div className="login_fields__password">
+        <div className="login_fields_password">
           <input
             type="password"
             placeholder="Password"
@@ -55,7 +64,7 @@ function Login() {
           />
         </div>
 
-        <div className="login_fields__submit">
+        <div className="login_fields_submit">
           <input type="submit" value="LOG IN" />
 
           <div className="forgot">
@@ -66,6 +75,24 @@ function Login() {
         </div>
 
       </form>
+
+      {/* GOOGLE LOGIN BUTTON */}
+
+      <div style={{ marginTop: "15px", textAlign: "center" }}>
+        <button
+          onClick={handleGoogleLogin}
+          style={{
+            width: "100%",
+            padding: "10px",
+            background: "#db4437",
+            border: "none",
+            color: "white",
+            cursor: "pointer"
+          }}
+        >
+          Login with Google
+        </button>
+      </div>
 
     </div>
   );

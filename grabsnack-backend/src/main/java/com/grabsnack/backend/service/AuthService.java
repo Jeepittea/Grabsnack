@@ -7,6 +7,7 @@ import com.grabsnack.backend.model.User;
 import com.grabsnack.backend.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -32,6 +33,24 @@ public class AuthService {
         userRepository.save(user);
 
         return "User Registered";
+
+    }
+
+    public String login(LoginRequest request) {
+
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+
+        if (optionalUser.isEmpty()) {
+            return "Invalid credentials";
+        }
+
+        User user = optionalUser.get();
+
+        if (!encoder.matches(request.getPassword(), user.getPassword())) {
+            return "Invalid credentials";
+        }
+
+        return "Login successful";
 
     }
 
