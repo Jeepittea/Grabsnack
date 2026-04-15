@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir F:\\\\System Integration Activity\\\\grabsnack-frontend:*)",
+      "Bash(mvn compile:*)",
+      "Bash(./mvnw compile:*)",
+      "Read(//f/System Integration Activity/**)",
+      "Bash(npm install:*)",
+      "Bash(\"C:/xampp/mysql/bin/mysql.exe\" -u root grabsnack_db)",
+      "Bash(\"/d/xampp/mysql/bin/mysql.exe\" -u root grabsnack_db)",
+      "Bash(/d/xampp/mysql/bin/mysql.exe:*)",
+      "Bash(node server.js)",
+      "Bash(curl -s http://localhost:3001/api/orders/1)",
+      "Bash(curl:*)",
+      "Bash(\"/d/xampp/mysql/bin/mysql.exe\" -u root grabsnack_db -e \"ALTER TABLE order_items MODIFY item_emoji VARCHAR\\(10\\) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
+      "Bash(taskkill //F //IM node.exe)"
+    ]
+  }
+}

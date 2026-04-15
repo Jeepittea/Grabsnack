@@ -1,19 +1,89 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+*, *::before, *::after { box-sizing: border-box; }
 
-  color-scheme: light dark;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* remove vite demo layout */
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
   padding: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #0f0f0f;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+#root { min-height: 100vh; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0f0f0f; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #444; }
+
+::selection { background: rgba(232,67,74,0.3); }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-15px); }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Responsive menu grid — controlled by class so media queries work */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) {
+  .menu-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .menu-grid { grid-template-columns: 1fr; }
+}
+
+/* Menu card hover — can't do transform hover in inline styles */
+.menu-card {
+  background-color: #1e1e2e;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.menu-card:hover { transform: scale(1.03); }
+
+/* Navbar search input */
+.nav-search {
+  flex: 1;
+  max-width: 400px;
+  background-color: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+.nav-search::placeholder { color: rgba(255,255,255,0.35); }
+.nav-search:focus { border-color: rgba(232,67,74,0.5); }
+
+/* Cart item hover in drawer */
+.drawer-item { transition: background 0.15s; }
+.drawer-item:hover { background: rgba(255,255,255,0.03); }
+
+/* Order history card */
+.order-card {
+  background: #1e1e2e;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+/* Toast animation */
+.toast-wrap {
+  animation: toastIn 0.35s ease both;
 }

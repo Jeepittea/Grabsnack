@@ -1,82 +1,183 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../Style2.css";
 
-function Register() {
+const FLOATING_EMOJIS = [
+  { emoji: "🌮", style: { top: "7%",   left: "5%",   "--dur": "4.5s", "--delay": "0s"   } },
+  { emoji: "🍗", style: { top: "18%",  right: "7%",  "--dur": "5.2s", "--delay": "0.6s" } },
+  { emoji: "🍔", style: { top: "55%",  left: "3%",   "--dur": "3.9s", "--delay": "1.3s" } },
+  { emoji: "🍟", style: { top: "65%",  right: "6%",  "--dur": "4.7s", "--delay": "0.9s" } },
+  { emoji: "🧋", style: { top: "30%",  left: "2%",   "--dur": "5.6s", "--delay": "2s"   } },
+  { emoji: "🍨", style: { bottom: "10%", right: "8%", "--dur": "4.1s", "--delay": "2.2s" } },
+  { emoji: "🌭", style: { bottom: "5%", left: "9%",  "--dur": "6.1s", "--delay": "0.4s" } },
+  { emoji: "🧅", style: { top: "42%",  right: "2%",  "--dur": "3.6s", "--delay": "1.6s" } },
+];
 
+function Register() {
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState("");
+  const [success, setSuccess]   = useState("");
+
+  const navigate = useNavigate();
+
+  // Simple password strength indicator
+  const getStrength = (pw) => {
+    if (!pw) return 0;
+    let score = 0;
+    if (pw.length >= 8)  score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return score;
+  };
+  const strength = getStrength(password);
+  const strengthColors = ["", "#EF4444", "#F59E0B", "#4da3ff", "#10B981"];
+  const strengthLabels = ["", "Weak", "Fair", "Good", "Strong 💪"];
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (!fullName || !email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    setError("");
+    setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/register",
-        {
-          fullName: fullName,
-          email: email,
-          password: password
-        }
-      );
+      await axios.post("http://localhost:8080/api/auth/register", {
+        fullName,
+        email,
+        password,
+      });
 
-      alert(response.data);
-
-    // eslint-disable-next-line no-unused-vars
-    } catch (error) {
-      alert("Registration failed");
+      setSuccess("Account created! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 1800);
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        "Registration failed. Please try again.";
+      setError(typeof msg === "string" ? msg : "Registration failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="login">
+    <div className="auth-wrapper">
+      {/* Floating background emojis */}
+      {FLOATING_EMOJIS.map(({ emoji, style }, i) => (
+        <span key={i} className="floating-emoji" style={style}>
+          {emoji}
+        </span>
+      ))}
 
-      <div className="login_title">
-        Join GrabSnack 🍔
-        <br />
-        Create your account
-      </div>
+      <div className="auth-card">
+        {/* Brand */}
+        <div className="auth-logo">🍔</div>
+        <div className="auth-brand">GrabSnack</div>
 
-      <form onSubmit={handleRegister} className="login_fields">
+        <h1 className="auth-title">Join GrabSnack 🎉</h1>
+        <p className="auth-subtitle">Create your account and start ordering</p>
 
-        <div className="login_fields__user">
-          <input
-            type="text"
-            placeholder="Full Name"
-            onChange={(e) => setFullName(e.target.value)}
-          />
-        </div>
+        {/* Feedback */}
+        {error   && <div className="auth-error">{error}</div>}
+        {success && <div className="auth-success">{success}</div>}
 
-        <div className="login_fields__user">
-          <input
-            type="text"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <div className="login_fields__password">
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <div className="login_fields__submit">
-          <input type="submit" value="REGISTER" />
-
-          <div className="forgot">
-            <span>Already have an account?</span>
-            <br />
-            <Link to="/login">Login here</Link>
+        <form onSubmit={handleRegister}>
+          <div className="form-group">
+            <label className="form-label">Full Name</label>
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Juan dela Cruz"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              autoComplete="name"
+            />
           </div>
+
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
+            <input
+              type="email"
+              className="form-input"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-input"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+            {/* Password strength bar */}
+            {password && (
+              <div style={{ marginTop: "10px" }}>
+                <div
+                  style={{
+                    height: "4px",
+                    borderRadius: "4px",
+                    background: "#393d52",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      height: "100%",
+                      width: `${(strength / 4) * 100}%`,
+                      background: strengthColors[strength],
+                      borderRadius: "4px",
+                      transition: "all 0.3s ease",
+                    }}
+                  />
+                </div>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: strengthColors[strength],
+                    marginTop: "4px",
+                    display: "block",
+                    fontWeight: "600",
+                  }}
+                >
+                  {strengthLabels[strength]}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={loading}
+            style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
+          >
+            {loading ? "Creating account..." : "🚀 Create Account"}
+          </button>
+        </form>
+
+        <div className="auth-link">
+          Already have an account?{" "}
+          <Link to="/login">Sign in here</Link>
         </div>
-
-      </form>
-
+      </div>
     </div>
   );
 }
