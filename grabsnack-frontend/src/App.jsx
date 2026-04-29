@@ -1,24 +1,24 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useGrabSnack } from "./context/GrabSnackContext";
+import { useGrabSnack } from './shared/context/GrabSnackContext';
 
 // Auth pages (keep existing design)
-import Login             from "./pages/Login";
-import Register          from "./pages/Register";
-import OAuthSuccess      from "./pages/OAuthSuccess";
+import Login             from './features/auth/Login';
+import Register          from './features/auth/Register';
+import OAuthSuccess      from './features/auth/OAuthSuccess';
 
 // Main pages (new Tailwind design)
-import Home              from "./pages/Home";
-import ProductDetail     from "./pages/ProductDetail";
-import Cart              from "./pages/Cart";
-import Checkout          from "./pages/Checkout";
-import OrderConfirmation from "./pages/OrderConfirmation";
-import OrderHistory      from "./pages/OrderHistory";
-import Profile           from "./pages/Profile";
-import GroupOrder        from "./pages/GroupOrder";
+import Home              from './features/products/Home';
+import ProductDetail     from './features/products/ProductDetail';
+import Cart              from './features/cart/Cart';
+import Checkout          from './features/orders/Checkout';
+import OrderConfirmation from './features/orders/OrderConfirmation';
+import OrderHistory      from './features/orders/OrderHistory';
+import Profile           from './features/profile/Profile';
+import GroupOrder        from './features/group-order/GroupOrder';
 
 // Global UI
 import CartDrawer from "./components/CartDrawer";
-import Toast      from "./components/Toast";
+import Toast      from './shared/components/Toast';
 
 // ── Route guards ──────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
