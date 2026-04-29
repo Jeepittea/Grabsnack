@@ -44,8 +44,8 @@ function Register() {
       setError("Please fill in all fields.");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
       return;
     }
     setError("");
@@ -62,10 +62,9 @@ function Register() {
       setTimeout(() => navigate("/login"), 1800);
     } catch (err) {
       const msg =
-        err?.response?.data?.message ||
-        err?.response?.data ||
+        err?.response?.data?.error?.message ||
         "Registration failed. Please try again.";
-      setError(typeof msg === "string" ? msg : "Registration failed.");
+      setError(msg);
     } finally {
       setLoading(false);
     }

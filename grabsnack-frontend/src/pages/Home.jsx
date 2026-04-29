@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import { useCart } from '../context/CartContext';
-import { MENU_ITEMS, CATEGORIES } from '../data/menuItems';
+import { useGrabSnack } from '../context/GrabSnackContext';
 
 // ─── Star Rating ─────────────────────────────────────────────────────────────
 function Stars({ rating }) {
@@ -96,8 +96,9 @@ function Home() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery]       = useState('');
   const menuRef                             = useRef(null);
+  const { products, productsLoading, CATEGORIES } = useGrabSnack();
 
-  const filtered = MENU_ITEMS.filter((item) => {
+  const filtered = products.filter((item) => {
     const matchCat    = activeCategory === 'All' || item.category === activeCategory;
     const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
@@ -212,7 +213,11 @@ function Home() {
         </div>
 
         {/* Grid */}
-        {filtered.length === 0 ? (
+        {productsLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 20px', color: 'rgba(255,255,255,0.4)', fontSize: '16px' }}>
+            Loading menu...
+          </div>
+        ) : filtered.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', textAlign: 'center', gap: '12px' }}>
             <span style={{ fontSize: '48px' }}>🔍</span>
             <p style={{ color: '#fff', fontWeight: 700, fontSize: '18px', margin: 0 }}>No results for "{searchQuery}"</p>
@@ -231,6 +236,7 @@ function Home() {
             ))}
           </div>
         )}
+
       </main>
 
       {/* ─ FOOTER ─────────────────────────────────────────────────────────── */}

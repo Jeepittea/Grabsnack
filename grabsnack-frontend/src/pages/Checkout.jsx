@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 import { useGrabSnack } from "../context/GrabSnackContext";
+import api from "../api/api";
 import "../Style2.css";
-
-const ORDER_API = "http://localhost:3001";
 
 const SHIPPING_FEE = 50;
 
@@ -23,15 +21,16 @@ function Checkout() {
   const { user } = useGrabSnack();
 
   const [form, setForm] = useState({
-    fullName:  user?.fullName || "",
-    address:   "",
-    city:      "",
-    zip:       "",
-    phone:     "",
+    fullName: user?.fullName || "",
+    address:  "",
+    city:     "",
+    zip:      "",
+    country:  "Philippines",
+    phone:    "",
   });
-  const [payment, setPayment]   = useState("cod");
-  const [loading, setLoading]   = useState(false);
-  const [errors, setErrors]     = useState({});
+  const [payment, setPayment]       = useState("cod");
+  const [loading, setLoading]       = useState(false);
+  const [errors, setErrors]         = useState({});
   const [orderError, setOrderError] = useState("");
 
   if (cart.length === 0) {
@@ -61,16 +60,14 @@ function Checkout() {
     if (!form.address.trim())  errs.address  = "Address is required";
     if (!form.city.trim())     errs.city     = "City is required";
     if (!form.zip.trim())      errs.zip      = "ZIP code is required";
+    if (!form.country.trim())  errs.country  = "Country is required";
     if (!form.phone.trim())    errs.phone    = "Phone number is required";
     return errs;
   };
 
   const handlePlaceOrder = async () => {
     const errs = validate();
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      return;
-    }
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setOrderError("");
     setLoading(true);
 
@@ -78,14 +75,21 @@ function Checkout() {
       const subtotal = cartTotal;
       const total    = subtotal + SHIPPING_FEE;
 
-      const { data } = await axios.post(`${ORDER_API}/api/orders`, {
-        userId:  user?.id,
-        items:   cart.map((i) => ({
-          name:     i.name,
-          emoji:    i.emoji,
-          price:    i.price,
-          quantity: i.quantity,
+      const { data } = await api.post("/api/orders", {
+        items: cart.map((i) => ({
+          productId: i.id,
+          name:      i.name,
+          emoji:     i.emoji,
+          price:     i.price,
+          quantity:  i.quantity,
         })),
+        shippingAddress: {
+          shippingFullName: form.fullName,
+          shippingAddress:  form.address,
+          shippingCity:     form.city,
+          shippingZipCode:  form.zip,
+          shippingCountry:  form.country,
+        },
         subtotal,
         shipping: SHIPPING_FEE,
         total,
@@ -95,11 +99,11 @@ function Checkout() {
       navigate("/order-confirmation", {
         state: {
           order: {
-            id:             `#${data.orderCode}`,
-            orderCode:      data.orderCode,
-            items:          cart,
+            id:              `#${data.data.orderCode}`,
+            orderCode:       data.data.orderCode,
+            items:           cart,
             subtotal,
-            shipping:       SHIPPING_FEE,
+            shipping:        SHIPPING_FEE,
             total,
             shippingAddress: form,
             paymentMethod:   payment,
@@ -107,7 +111,9 @@ function Checkout() {
         },
       });
     } catch (err) {
-      const msg = err?.response?.data?.error || "Failed to place order. Please try again.";
+      const msg =
+        err?.response?.data?.error?.message ||
+        "Failed to place order. Please try again.";
       setOrderError(msg);
     } finally {
       setLoading(false);
@@ -152,15 +158,16 @@ function Checkout() {
             <div className="dark-card" style={{ padding: "28px" }}>
               <div className="section-label">📍 Delivery Address</div>
 
-              <InputField field="fullName" label="Full Name"    placeholder="Juan dela Cruz" />
-              <InputField field="address"  label="Street Address" placeholder="123 Rizal St, Barangay..." />
+              <InputField field="fullName" label="Full Name"       placeholder="Juan dela Cruz" />
+              <InputField field="address"  label="Street Address"  placeholder="123 Rizal St, Barangay..." />
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                <InputField field="city" label="City / Municipality" placeholder="Manila" />
-                <InputField field="zip"  label="ZIP Code"            placeholder="1000" />
+                <InputField field="city" label="City / Municipality" placeholder="Cebu City" />
+                <InputField field="zip"  label="ZIP Code"            placeholder="6000" />
               </div>
 
-              <InputField field="phone" label="Phone Number" placeholder="+63 9xx xxx xxxx" type="tel" />
+              <InputField field="country" label="Country"      placeholder="Philippines" />
+              <InputField field="phone"   label="Phone Number" placeholder="+63 9xx xxx xxxx" type="tel" />
             </div>
 
             {/* Payment method */}
@@ -191,18 +198,11 @@ function Checkout() {
               <div className="order-summary">
                 <div className="order-summary-title">Order Summary</div>
 
-                {/* Items */}
                 <div style={{ marginBottom: "20px" }}>
                   {cart.map((item) => (
                     <div
                       key={item.id}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "12px",
-                        fontSize: "14px",
-                      }}
+                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", fontSize: "14px" }}
                     >
                       <span style={{ color: "#afb1be" }}>
                         {item.emoji} {item.name} × {item.quantity}
@@ -241,13 +241,7 @@ function Checkout() {
 
                 <button
                   className="btn-success"
-                  style={{
-                    width: "100%",
-                    justifyContent: "center",
-                    marginTop: "8px",
-                    opacity: loading ? 0.7 : 1,
-                    cursor: loading ? "not-allowed" : "pointer",
-                  }}
+                  style={{ width: "100%", justifyContent: "center", marginTop: "8px", opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
                   onClick={handlePlaceOrder}
                   disabled={loading}
                 >
@@ -264,14 +258,7 @@ function Checkout() {
               </div>
             </div>
 
-            <p
-              style={{
-                textAlign: "center",
-                color: "#4a4e68",
-                fontSize: "12px",
-                marginTop: "16px",
-              }}
-            >
+            <p style={{ textAlign: "center", color: "#4a4e68", fontSize: "12px", marginTop: "16px" }}>
               🔒 Your payment is 100% secure
             </p>
           </div>

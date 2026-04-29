@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { useGrabSnack } from '../context/GrabSnackContext';
-
-const API_URL = 'http://localhost:3001';
+import api from '../api/api';
 
 const STATUS_STYLE = {
   delivered:  { bg: 'rgba(34,197,94,0.15)',  color: '#4ade80', dot: '#4ade80',  label: 'Delivered' },
@@ -19,10 +17,10 @@ function OrderHistory() {
   const [error,   setError]   = useState('');
 
   useEffect(() => {
-    if (!user?.id) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
 
-    axios.get(`${API_URL}/api/orders/${user.id}`)
-      .then(({ data }) => setOrders(data))
+    api.get('/api/orders')
+      .then(({ data }) => setOrders(data.data ?? []))
       .catch(() => setError('Failed to load orders.'))
       .finally(() => setLoading(false));
   }, [user]);
@@ -48,12 +46,10 @@ function OrderHistory() {
           </div>
         </div>
 
-        {/* Error */}
         {error && (
           <p style={{ color: '#f87171', textAlign: 'center', marginBottom: '24px' }}>{error}</p>
         )}
 
-        {/* Empty */}
         {!loading && !error && orders.length === 0 && (
           <div style={{ textAlign: 'center', padding: '80px 20px' }}>
             <div style={{ fontSize: '56px', marginBottom: '16px' }}>📋</div>
@@ -70,17 +66,13 @@ function OrderHistory() {
           </div>
         )}
 
-        {/* Orders list */}
         <div>
           {orders.map((order, i) => {
             const st    = STATUS_STYLE[order.status] || STATUS_STYLE.pending;
             const items = order.items || [];
 
             return (
-              <div
-                key={order.id || i}
-                className="order-card"
-              >
+              <div key={order.id || i} className="order-card">
                 {/* Order header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
                   <div>
@@ -114,7 +106,7 @@ function OrderHistory() {
                   </div>
                 </div>
 
-                {/* Items */}
+                {/* Items — backend uses itemName / itemEmoji */}
                 {items.length > 0 && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
                     {items.map((item) => (
@@ -130,9 +122,9 @@ function OrderHistory() {
                           padding: '6px 10px',
                         }}
                       >
-                        <span style={{ fontSize: '18px' }}>{item.emoji || '🍔'}</span>
+                        <span style={{ fontSize: '18px' }}>{item.itemEmoji || '🍔'}</span>
                         <div>
-                          <p style={{ color: '#fff', fontSize: '12px', fontWeight: 600, margin: 0 }}>{item.name}</p>
+                          <p style={{ color: '#fff', fontSize: '12px', fontWeight: 600, margin: 0 }}>{item.itemName}</p>
                           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', margin: 0 }}>× {item.quantity}</p>
                         </div>
                       </div>
@@ -142,7 +134,7 @@ function OrderHistory() {
 
                 {/* Totals row */}
                 <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px', marginTop: '4px', display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
-                  <span>Subtotal ₱{order.subtotal} + Shipping ₱{order.shipping}</span>
+                  <span>Subtotal ₱{order.subtotal} + Shipping ₱{order.shipping ?? 50}</span>
                   <span>Est. 25–40 min</span>
                 </div>
               </div>

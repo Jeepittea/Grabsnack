@@ -39,21 +39,15 @@ function Login() {
         password,
       });
 
-      // Store user data — works whether backend returns a token string or an object
-      const data = response.data;
-      const userData =
-        typeof data === "object" && data !== null
-          ? { ...data, email }
-          : { token: data, email, fullName: email.split("@")[0] };
-
+      // Backend returns ApiResponse — actual user data is in response.data.data
+      const userData = response.data.data;
       login(userData);
       navigate("/dashboard");
     } catch (err) {
       const msg =
-        err?.response?.data?.message ||
-        err?.response?.data ||
+        err?.response?.data?.error?.message ||
         "Invalid email or password. Please try again.";
-      setError(typeof msg === "string" ? msg : "Login failed. Please try again.");
+      setError(msg);
     } finally {
       setLoading(false);
     }
