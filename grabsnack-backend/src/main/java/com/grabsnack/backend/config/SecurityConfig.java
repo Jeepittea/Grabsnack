@@ -2,6 +2,7 @@ package com.grabsnack.backend.config;
 
 import com.grabsnack.backend.handler.OAuth2LoginSuccessHandler;
 import com.grabsnack.backend.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -44,11 +45,27 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/auth/refresh",
                                 "/oauth2/**",
                                 "/login/oauth2/**"
                         ).permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
                         .anyRequest().authenticated()
+                )
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) -> {
+                            res.setContentType("application/json");
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.getWriter().write("{\"success\":false,\"data\":null,\"error\":{\"code\":\"AUTH-001\",\"message\":\"Unauthorized\"},\"timestamp\":\"" + java.time.Instant.now() + "\"}");
+                        })
+                        .accessDeniedHandler((req, res, e) -> {
+                            res.setContentType("application/json");
+                            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            res.getWriter().write("{\"success\":false,\"data\":null,\"error\":{\"code\":\"AUTH-003\",\"message\":\"Forbidden\"},\"timestamp\":\"" + java.time.Instant.now() + "\"}");
+                        })
                 )
 
                 .oauth2Login(oauth ->
