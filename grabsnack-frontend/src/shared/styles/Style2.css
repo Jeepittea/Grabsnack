@@ -228,13 +228,22 @@ input, textarea, select {
 }
 
 .form-input[type="password"] {
-  color: var(--primary);
-  letter-spacing: 2px;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  letter-spacing: 3px;
 }
 
 .form-input[type="password"]::placeholder {
   color: #4a4e68;
   letter-spacing: normal;
+}
+
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px rgba(57,61,82,0.9) inset;
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
 }
 
 /* Primary gradient button */

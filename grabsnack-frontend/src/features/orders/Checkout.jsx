@@ -4,15 +4,55 @@ import Navbar from '../../shared/components/Navbar';
 import { useCart } from '../../shared/context/CartContext';
 import { useGrabSnack } from '../../shared/context/GrabSnackContext';
 import api from '../../shared/api/api';
-import "../Style2.css";
+import "../../shared/styles/Style2.css";
 
 const SHIPPING_FEE = 50;
 
+const getExpediteFee = (subtotal) => {
+  if (subtotal >= 600) return 80;
+  if (subtotal >= 300) return 60;
+  return 40;
+};
+
+const CashIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <rect x="2" y="6" width="20" height="13" rx="2" fill="#22c55e" opacity="0.15" stroke="#22c55e" strokeWidth="1.5"/>
+    <circle cx="12" cy="12" r="3" stroke="#22c55e" strokeWidth="1.5"/>
+    <path d="M6 9v6M18 9v6" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
+const GCashIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <rect width="28" height="28" rx="6" fill="#007DFF"/>
+    <text x="14" y="20" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold" fontFamily="Arial">G</text>
+  </svg>
+);
+
+const CreditCardIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <rect x="1" y="5" width="26" height="18" rx="3" fill="#1a1f71" stroke="#1a1f71" strokeWidth="1"/>
+    <rect x="1" y="10" width="26" height="5" fill="#fff" opacity="0.15"/>
+    <text x="4" y="21" fill="#fff" fontSize="6" fontWeight="900" fontFamily="Arial" letterSpacing="0.5">VISA</text>
+    <circle cx="21" cy="19" r="4" fill="#EB001B" opacity="0.9"/>
+    <circle cx="25" cy="19" r="4" fill="#F79E1B" opacity="0.9"/>
+  </svg>
+);
+
+const DebitCardIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <rect x="2" y="5" width="20" height="14" rx="2" stroke="#a78bfa" strokeWidth="1.5" fill="#a78bfa" fillOpacity="0.1"/>
+    <path d="M2 9h20" stroke="#a78bfa" strokeWidth="1.5"/>
+    <rect x="4" y="13" width="6" height="2" rx="1" fill="#a78bfa"/>
+    <rect x="12" y="13" width="3" height="2" rx="1" fill="#a78bfa" opacity="0.5"/>
+  </svg>
+);
+
 const PAYMENT_METHODS = [
-  { id: "cod",    emoji: "💵", name: "Cash on Delivery", desc: "Pay when it arrives" },
-  { id: "gcash",  emoji: "📱", name: "GCash",            desc: "Mobile payment" },
-  { id: "credit", emoji: "💳", name: "Credit Card",      desc: "Visa / Mastercard" },
-  { id: "debit",  emoji: "🏦", name: "Debit Card",       desc: "Bank debit card" },
+  { id: "cod",    Icon: CashIcon,       name: "Cash on Delivery", desc: "Pay when it arrives" },
+  { id: "gcash",  Icon: GCashIcon,      name: "GCash",            desc: "Mobile payment" },
+  { id: "credit", Icon: CreditCardIcon, name: "Credit Card",      desc: "Visa / Mastercard" },
+  { id: "debit",  Icon: DebitCardIcon,  name: "Debit Card",       desc: "Bank debit card" },
 ];
 
 function Checkout() {
@@ -28,7 +68,9 @@ function Checkout() {
     country:  "Philippines",
     phone:    "",
   });
-  const [payment, setPayment]       = useState("cod");
+  const [payment, setPayment]           = useState("cod");
+  const [deliveryType, setDeliveryType] = useState("standard");
+  const [scheduledTime, setScheduledTime] = useState("");
   const [loading, setLoading]       = useState(false);
   const [errors, setErrors]         = useState({});
   const [orderError, setOrderError] = useState("");
@@ -72,8 +114,9 @@ function Checkout() {
     setLoading(true);
 
     try {
-      const subtotal = cartTotal;
-      const total    = subtotal + SHIPPING_FEE;
+      const subtotal    = cartTotal;
+      const expediteFee = deliveryType === "expedite" ? getExpediteFee(subtotal) : 0;
+      const total       = subtotal + SHIPPING_FEE + expediteFee;
 
       const { data } = await api.post("/api/orders", {
         items: cart.map((i) => ({
@@ -107,6 +150,9 @@ function Checkout() {
             total,
             shippingAddress: form,
             paymentMethod:   payment,
+            deliveryType,
+            expediteFee,
+            scheduledTime:   deliveryType === "later" ? scheduledTime : null,
           },
         },
       });
@@ -139,6 +185,8 @@ function Checkout() {
     </div>
   );
 
+  const selectedMethod = PAYMENT_METHODS.find((m) => m.id === payment);
+
   return (
     <div className="page-wrapper">
       <Navbar />
@@ -151,7 +199,7 @@ function Checkout() {
       <div className="content-section">
         <div className="checkout-grid">
 
-          {/* ─ Left: Forms ─ */}
+          {/* Left: Forms */}
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
 
             {/* Shipping form */}
@@ -170,21 +218,168 @@ function Checkout() {
               <InputField field="phone"   label="Phone Number" placeholder="+63 9xx xxx xxxx" type="tel" />
             </div>
 
+            {/* Delivery Time */}
+            <div className="dark-card" style={{ padding: "28px" }}>
+              <div className="section-label">🕐 Delivery Time</div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "4px" }}>
+
+                {/* Standard */}
+                <button
+                  type="button"
+                  onClick={() => setDeliveryType("standard")}
+                  style={{
+                    padding: "14px 16px",
+                    borderRadius: "12px",
+                    border: deliveryType === "standard" ? "2px solid #e8434a" : "2px solid #393d52",
+                    background: deliveryType === "standard" ? "rgba(232,67,74,0.08)" : "rgba(57,61,82,0.3)",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    transition: "all 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <span style={{ fontSize: "22px" }}>🛵</span>
+                    <div>
+                      <div style={{ color: "#fff", fontWeight: "700", fontSize: "14px" }}>Standard Delivery</div>
+                      <div style={{ color: "#afb1be", fontSize: "12px" }}>ASAP · Est. 30–45 min</div>
+                    </div>
+                  </div>
+                  <span style={{ color: "#22c55e", fontWeight: "700", fontSize: "13px" }}>FREE</span>
+                </button>
+
+                {/* Expedite */}
+                <button
+                  type="button"
+                  onClick={() => setDeliveryType("expedite")}
+                  style={{
+                    padding: "14px 16px",
+                    borderRadius: "12px",
+                    border: deliveryType === "expedite" ? "2px solid #f59e0b" : "2px solid #393d52",
+                    background: deliveryType === "expedite" ? "rgba(245,158,11,0.08)" : "rgba(57,61,82,0.3)",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    transition: "all 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <span style={{ fontSize: "22px" }}>🚀</span>
+                    <div>
+                      <div style={{ color: "#fff", fontWeight: "700", fontSize: "14px" }}>
+                        Expedite / Rush
+                        <span style={{ marginLeft: "8px", fontSize: "10px", background: "#f59e0b", color: "#000", padding: "2px 7px", borderRadius: "50px", fontWeight: "800" }}>FAST</span>
+                      </div>
+                      <div style={{ color: "#afb1be", fontSize: "12px" }}>Priority delivery · Est. 15–20 min</div>
+                    </div>
+                  </div>
+                  <span style={{ color: "#f59e0b", fontWeight: "700", fontSize: "13px" }}>+₱{getExpediteFee(cartTotal)}</span>
+                </button>
+
+                {/* Schedule Later */}
+                <button
+                  type="button"
+                  onClick={() => setDeliveryType("later")}
+                  style={{
+                    padding: "14px 16px",
+                    borderRadius: "12px",
+                    border: deliveryType === "later" ? "2px solid #4da3ff" : "2px solid #393d52",
+                    background: deliveryType === "later" ? "rgba(77,163,255,0.08)" : "rgba(57,61,82,0.3)",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    transition: "all 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <span style={{ fontSize: "22px" }}>📅</span>
+                    <div>
+                      <div style={{ color: "#fff", fontWeight: "700", fontSize: "14px" }}>Schedule for Later</div>
+                      <div style={{ color: "#afb1be", fontSize: "12px" }}>Pick your preferred time</div>
+                    </div>
+                  </div>
+                  <span style={{ color: "#22c55e", fontWeight: "700", fontSize: "13px" }}>FREE</span>
+                </button>
+              </div>
+
+              {/* Expedite fee breakdown */}
+              {deliveryType === "expedite" && (
+                <div style={{
+                  marginTop: "14px", padding: "12px 16px",
+                  background: "rgba(245,158,11,0.07)",
+                  border: "1px solid rgba(245,158,11,0.25)",
+                  borderRadius: "10px",
+                }}>
+                  <div style={{ color: "#f59e0b", fontWeight: "700", fontSize: "13px", marginBottom: "6px" }}>🚀 Expedite Fee Breakdown</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#afb1be" }}>
+                      <span>Order ₱0 – ₱299</span><span style={{ color: "#f59e0b" }}>+₱40</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#afb1be" }}>
+                      <span>Order ₱300 – ₱599</span><span style={{ color: "#f59e0b" }}>+₱60</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#afb1be" }}>
+                      <span>Order ₱600+</span><span style={{ color: "#f59e0b" }}>+₱80</span>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: "8px", fontSize: "12px", color: "#afb1be" }}>
+                    📍 Higher fees apply for far locations or large orders.
+                  </div>
+                </div>
+              )}
+
+              {/* Schedule time picker */}
+              {deliveryType === "later" && (
+                <div style={{ marginTop: "14px" }}>
+                  <label style={{ fontSize: "12px", fontWeight: "600", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.5px", display: "block", marginBottom: "8px" }}>
+                    Select Date & Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={scheduledTime}
+                    min={new Date(Date.now() + 30 * 60000).toISOString().slice(0, 16)}
+                    onChange={(e) => setScheduledTime(e.target.value)}
+                    style={{
+                      width: "100%", boxSizing: "border-box",
+                      padding: "12px 16px",
+                      background: "#2a2d3e",
+                      border: "1.5px solid #393d52",
+                      borderRadius: "10px",
+                      color: "#ffffff", fontSize: "14px",
+                      outline: "none", colorScheme: "dark",
+                    }}
+                  />
+                  <p style={{ color: "#afb1be", fontSize: "12px", marginTop: "8px" }}>
+                    📌 Minimum 30 minutes from now
+                  </p>
+                </div>
+              )}
+            </div>
+
             {/* Payment method */}
             <div className="dark-card" style={{ padding: "28px" }}>
               <div className="section-label">💳 Payment Method</div>
 
               <div className="payment-options">
-                {PAYMENT_METHODS.map((m) => (
+                {PAYMENT_METHODS.map(({ id, Icon, name, desc }) => (
                   <button
-                    key={m.id}
-                    className={`payment-option${payment === m.id ? " selected" : ""}`}
-                    onClick={() => setPayment(m.id)}
+                    key={id}
+                    className={`payment-option${payment === id ? " selected" : ""}`}
+                    onClick={() => setPayment(id)}
                   >
-                    <span className="payment-emoji">{m.emoji}</span>
+                    <span className="payment-emoji" style={{ display: "flex", alignItems: "center" }}>
+                      <Icon />
+                    </span>
                     <div className="payment-option-text">
-                      <span className="payment-option-name">{m.name}</span>
-                      <span className="payment-option-desc">{m.desc}</span>
+                      <span className="payment-option-name">{name}</span>
+                      <span className="payment-option-desc">{desc}</span>
                     </div>
                   </button>
                 ))}
@@ -192,7 +387,7 @@ function Checkout() {
             </div>
           </div>
 
-          {/* ─ Right: Summary ─ */}
+          {/* Right: Summary */}
           <div style={{ position: "sticky", top: "88px" }}>
             <div className="dark-card">
               <div className="order-summary">
@@ -223,14 +418,26 @@ function Checkout() {
                   <span>₱{SHIPPING_FEE}</span>
                 </div>
                 <div className="summary-row">
+                  <span>Delivery</span>
+                  <span style={{ color: deliveryType === "expedite" ? "#f59e0b" : deliveryType === "later" ? "#4da3ff" : "#22c55e" }}>
+                    {deliveryType === "standard" ? "🛵 Standard" : deliveryType === "expedite" ? "🚀 Expedite" : scheduledTime ? `📅 ${new Date(scheduledTime).toLocaleString("en-PH", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}` : "📅 Scheduled"}
+                  </span>
+                </div>
+                {deliveryType === "expedite" && (
+                  <div className="summary-row">
+                    <span>Expedite Fee</span>
+                    <span style={{ color: "#f59e0b" }}>+₱{getExpediteFee(cartTotal)}</span>
+                  </div>
+                )}
+                <div className="summary-row">
                   <span>Payment</span>
                   <span style={{ color: "#DC6180" }}>
-                    {PAYMENT_METHODS.find((m) => m.id === payment)?.name}
+                    {selectedMethod?.name}
                   </span>
                 </div>
                 <div className="summary-row total">
                   <span>Total</span>
-                  <span>₱{cartTotal + SHIPPING_FEE}</span>
+                  <span>₱{cartTotal + SHIPPING_FEE + (deliveryType === "expedite" ? getExpediteFee(cartTotal) : 0)}</span>
                 </div>
 
                 {orderError && (

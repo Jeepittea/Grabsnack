@@ -1,71 +1,18 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useCart } from '../../shared/context/CartContext';
 import { useGrabSnack } from '../../shared/context/GrabSnackContext';
 
 const SHIPPING = 50;
-const API_URL  = 'http://localhost:3001';
 
 function CartDrawer() {
   const navigate = useNavigate();
-  const { cart, isCartOpen, closeCart, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
+  const { cart, isCartOpen, closeCart, updateQuantity, removeFromCart, cartTotal } = useCart();
   const { user } = useGrabSnack();
 
-  const [placing, setPlacing]   = useState(false);
-  const [orderError, setOrderError] = useState('');
-
-  const handlePlaceOrder = async () => {
-    setOrderError('');
-
-    if (!cart || cart.length === 0) {
-      setOrderError('Add items to your cart first');
-      return;
-    }
-
-    if (!user?.id) {
-      setOrderError('Please log in to place an order');
-      return;
-    }
-
-    setPlacing(true);
-    try {
-      const subtotal = cartTotal;
-      const total    = subtotal + SHIPPING;
-
-      const { data } = await axios.post(`${API_URL}/api/orders`, {
-        userId:   user.id,
-        items:    cart.map((i) => ({
-          name:     i.name,
-          emoji:    i.emoji,
-          price:    i.price,
-          quantity: i.quantity,
-        })),
-        subtotal,
-        shipping: SHIPPING,
-        total,
-      });
-
-      clearCart();
-      closeCart();
-      navigate('/order-confirmation', {
-        state: {
-          order: {
-            id:        `#${data.orderCode}`,
-            orderCode: data.orderCode,
-            items:     cart,
-            subtotal,
-            shipping:  SHIPPING,
-            total,
-          },
-        },
-      });
-    } catch (err) {
-      const msg = err?.response?.data?.error || 'Failed to place order. Please try again.';
-      setOrderError(msg);
-    } finally {
-      setPlacing(false);
-    }
+  const handlePlaceOrder = () => {
+    if (!user?.id) return;
+    closeCart();
+    navigate('/checkout');
   };
 
   return (
@@ -278,29 +225,21 @@ function CartDrawer() {
               </div>
             </div>
 
-            {orderError && (
-              <p style={{ color: '#f87171', fontSize: '13px', textAlign: 'center', margin: '0 0 10px', fontWeight: 500 }}>
-                {orderError}
-              </p>
-            )}
-
             <button
               onClick={handlePlaceOrder}
-              disabled={placing}
               style={{
                 width: 'calc(100% - 0px)',
-                backgroundColor: placing ? '#a33' : '#e8434a',
+                backgroundColor: '#e8434a',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '12px',
                 padding: '14px',
                 fontSize: '16px',
                 fontWeight: 600,
-                cursor: placing ? 'not-allowed' : 'pointer',
-                opacity: placing ? 0.75 : 1,
+                cursor: 'pointer',
               }}
             >
-              {placing ? 'Placing Order…' : 'Place Order →'}
+              Place Order →
             </button>
           </div>
         )}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../Style2.css";
+import "../../shared/styles/Style2.css";
 
 const FLOATING_EMOJIS = [
   { emoji: "🌮", style: { top: "7%",   left: "5%",   "--dur": "4.5s", "--delay": "0s"   } },
@@ -18,19 +18,19 @@ function Register() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw]     = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState("");
   const [success, setSuccess]   = useState("");
 
   const navigate = useNavigate();
 
-  // Simple password strength indicator
   const getStrength = (pw) => {
     if (!pw) return 0;
     let score = 0;
-    if (pw.length >= 8)  score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
+    if (pw.length >= 8)          score++;
+    if (/[A-Z]/.test(pw))        score++;
+    if (/[0-9]/.test(pw))        score++;
     if (/[^A-Za-z0-9]/.test(pw)) score++;
     return score;
   };
@@ -72,7 +72,6 @@ function Register() {
 
   return (
     <div className="auth-wrapper">
-      {/* Floating background emojis */}
       {FLOATING_EMOJIS.map(({ emoji, style }, i) => (
         <span key={i} className="floating-emoji" style={style}>
           {emoji}
@@ -80,14 +79,12 @@ function Register() {
       ))}
 
       <div className="auth-card">
-        {/* Brand */}
         <div className="auth-logo">🍔</div>
         <div className="auth-brand">GrabSnack</div>
 
         <h1 className="auth-title">Join GrabSnack 🎉</h1>
         <p className="auth-subtitle">Create your account and start ordering</p>
 
-        {/* Feedback */}
         {error   && <div className="auth-error">{error}</div>}
         {success && <div className="auth-success">{success}</div>}
 
@@ -118,25 +115,39 @@ function Register() {
 
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-input"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-            />
-            {/* Password strength bar */}
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPw ? "text" : "password"}
+                className="form-input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                style={{
+                  paddingRight: "44px",
+                  color: "#ffffff",
+                  backgroundColor: "rgba(57,61,82,0.8)",
+                  letterSpacing: showPw ? "normal" : "3px",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                style={{
+                  position: "absolute", right: "12px", top: password ? "30%" : "50%",
+                  transform: "translateY(-50%)",
+                  background: "none", border: "none", cursor: "pointer",
+                  fontSize: "18px", padding: 0, lineHeight: 1,
+                }}
+                title={showPw ? "Hide password" : "Show password"}
+              >
+                {showPw ? "🙈" : "👁️"}
+              </button>
+            </div>
+
             {password && (
               <div style={{ marginTop: "10px" }}>
-                <div
-                  style={{
-                    height: "4px",
-                    borderRadius: "4px",
-                    background: "#393d52",
-                    overflow: "hidden",
-                  }}
-                >
+                <div style={{ height: "4px", borderRadius: "4px", background: "#393d52", overflow: "hidden" }}>
                   <div
                     style={{
                       height: "100%",
@@ -147,15 +158,7 @@ function Register() {
                     }}
                   />
                 </div>
-                <span
-                  style={{
-                    fontSize: "11px",
-                    color: strengthColors[strength],
-                    marginTop: "4px",
-                    display: "block",
-                    fontWeight: "600",
-                  }}
-                >
+                <span style={{ fontSize: "11px", color: strengthColors[strength], marginTop: "4px", display: "block", fontWeight: "600" }}>
                   {strengthLabels[strength]}
                 </span>
               </div>

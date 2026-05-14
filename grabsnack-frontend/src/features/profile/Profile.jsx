@@ -1,20 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from '../../shared/components/Navbar';
 import { useGrabSnack } from '../../shared/context/GrabSnackContext';
-import "../Style2.css";
+import api from '../../shared/api/api';
+import "../../shared/styles/Style2.css";
 
 function Profile() {
   const navigate = useNavigate();
-  const { user, orders, logout, login } = useGrabSnack();
+  const { user, logout, login } = useGrabSnack();
+  const [orders, setOrders] = useState([]);
 
-  const [editing, setEditing] = useState(false);
-  const [saved, setSaved]     = useState(false);
-  const [form, setForm]       = useState({
+  useEffect(() => {
+    if (user) {
+      api.get('/api/orders')
+        .then(({ data }) => setOrders(data.data ?? []))
+        .catch(() => setOrders([]));
+    }
+  }, [user]);
+
+  const [editing, setEditing]       = useState(false);
+  const [saved, setSaved]           = useState(false);
+  const [form, setForm]             = useState({
     fullName: user?.fullName || "",
     email:    user?.email    || "",
     phone:    user?.phone    || "",
   });
+
+  const [pwForm, setPwForm]         = useState({ current: "", newPw: "", confirm: "" });
+  const [pwError, setPwError]       = useState("");
+  const [pwSuccess, setPwSuccess]   = useState(false);
+  const [pwLoading, setPwLoading]   = useState(false);
+  const [showPw, setShowPw]         = useState({ current: false, newPw: false, confirm: false });
+
+  const handleChangePassword = async () => {
+    setPwError("");
+    if (!pwForm.current)                          return setPwError("Current password is required");
+    if (pwForm.newPw.length < 6)                  return setPwError("New password must be at least 6 characters");
+    if (pwForm.newPw !== pwForm.confirm)           return setPwError("Passwords do not match");
+    setPwLoading(true);
+    try {
+      await api.put("/api/users/me/change-password", {
+        currentPassword: pwForm.current,
+        newPassword:     pwForm.newPw,
+      });
+      setPwSuccess(true);
+      setPwForm({ current: "", newPw: "", confirm: "" });
+      setTimeout(() => setPwSuccess(false), 3000);
+    } catch (err) {
+      setPwError(err?.response?.data?.error?.message || "Failed to change password");
+    } finally {
+      setPwLoading(false);
+    }
+  };
 
   // Derive initials for avatar
   const initials = (form.fullName || form.email || "?")
@@ -272,6 +309,85 @@ function Profile() {
                   </button>
                 </div>
               )}
+            </div>
+
+            {/* Change Password */}
+            <div className="dark-card" style={{ padding: "32px", marginTop: "20px" }}>
+              <div style={{ marginBottom: "24px" }}>
+                <div style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.8px", color: "#DC6180", marginBottom: "4px" }}>
+                  Security
+                </div>
+                <h3 style={{ fontSize: "18px", fontWeight: "800", color: "#fff", margin: 0 }}>
+                  🔒 Change Password
+                </h3>
+              </div>
+
+              {pwSuccess && (
+                <div className="auth-success" style={{ marginBottom: "16px" }}>
+                  ✅ Password changed successfully!
+                </div>
+              )}
+              {pwError && (
+                <p style={{ color: "#f87171", fontSize: "13px", marginBottom: "16px", fontWeight: 500 }}>
+                  {pwError}
+                </p>
+              )}
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {[
+                  { key: "current", label: "Current Password",     placeholder: "Enter current password" },
+                  { key: "newPw",   label: "New Password",         placeholder: "At least 6 characters" },
+                  { key: "confirm", label: "Confirm New Password", placeholder: "Re-enter new password" },
+                ].map(({ key, label, placeholder }) => (
+                  <div key={key} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <label style={{ fontSize: "12px", fontWeight: "600", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      {label}
+                    </label>
+                    <div style={{ position: "relative" }}>
+                      <input
+                        type={showPw[key] ? "text" : "password"}
+                        autoComplete="new-password"
+                        placeholder={placeholder}
+                        value={pwForm[key]}
+                        onChange={(e) => setPwForm((f) => ({ ...f, [key]: e.target.value }))}
+                        style={{
+                          width: "100%",
+                          boxSizing: "border-box",
+                          padding: "14px 44px 14px 16px",
+                          background: "#2a2d3e",
+                          border: "1.5px solid #393d52",
+                          borderRadius: "10px",
+                          outline: "none",
+                          fontSize: "14px",
+                          color: "#ffffff",
+                          caretColor: "#ffffff",
+                          letterSpacing: showPw[key] ? "normal" : "4px",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPw((s) => ({ ...s, [key]: !s[key] }))}
+                        style={{
+                          position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)",
+                          background: "none", border: "none", cursor: "pointer",
+                          fontSize: "18px", padding: 0, lineHeight: 1,
+                        }}
+                        title={showPw[key] ? "Hide password" : "Show password"}
+                      >
+                        {showPw[key] ? "🙈" : "👁️"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  className="btn-primary"
+                  style={{ opacity: pwLoading ? 0.7 : 1, cursor: pwLoading ? "not-allowed" : "pointer" }}
+                  onClick={handleChangePassword}
+                  disabled={pwLoading}
+                >
+                  {pwLoading ? "⏳ Updating..." : "🔑 Update Password"}
+                </button>
+              </div>
             </div>
 
             {/* Account actions */}

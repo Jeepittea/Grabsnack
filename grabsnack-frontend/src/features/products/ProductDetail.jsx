@@ -1,14 +1,14 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from '../../shared/components/Navbar';
 import { useGrabSnack } from '../../shared/context/GrabSnackContext';
-import "../Style2.css";
+import "../../shared/styles/Style2.css";
 
 function StarRating({ rating }) {
   return (
     <span className="stars" style={{ fontSize: "18px", letterSpacing: "2px" }}>
-      {"★".repeat(Math.floor(rating))}
-      {"☆".repeat(5 - Math.floor(rating))}
+      {"â˜…".repeat(Math.floor(rating))}
+      {"â˜†".repeat(5 - Math.floor(rating))}
     </span>
   );
 }
@@ -30,7 +30,7 @@ function ProductDetail() {
       <div className="page-wrapper">
         <Navbar />
         <div className="empty-state" style={{ marginTop: "80px" }}>
-          <span className="empty-emoji">😕</span>
+          <span className="empty-emoji">ðŸ˜•</span>
           <h3 className="empty-title">Product Not Found</h3>
           <p className="empty-text">This item doesn&apos;t exist in our menu.</p>
           <button className="btn-primary" style={{ width: "auto", padding: "14px 32px" }} onClick={() => navigate("/dashboard")}>
@@ -63,7 +63,7 @@ function ProductDetail() {
 
       <div className="content-section" style={{ paddingTop: "40px" }}>
         <button className="btn-back" onClick={() => navigate("/dashboard")}>
-          ← Back to Menu
+          â† Back to Menu
         </button>
 
         {/* Main detail grid */}
@@ -110,7 +110,7 @@ function ProductDetail() {
               <div className="product-rating" style={{ marginBottom: "20px" }}>
                 <StarRating rating={product.rating} />
                 <span className="rating-value" style={{ fontSize: "16px" }}>
-                  {product.rating} · Highly rated
+                  {product.rating} Â· Highly rated
                 </span>
               </div>
 
@@ -124,7 +124,7 @@ function ProductDetail() {
                   letterSpacing: "-1px",
                 }}
               >
-                ₱{product.price}
+                â‚±{product.price}
               </div>
 
               {/* Description */}
@@ -159,7 +159,7 @@ function ProductDetail() {
                     className="qty-btn"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   >
-                    −
+                    âˆ’
                   </button>
                   <span className="qty-value">{quantity}</span>
                   <button
@@ -188,7 +188,7 @@ function ProductDetail() {
                   Subtotal ({quantity} {quantity === 1 ? "item" : "items"})
                 </span>
                 <span style={{ color: "#DC6180", fontSize: "22px", fontWeight: "900" }}>
-                  ₱{product.price * quantity}
+                  â‚±{product.price * quantity}
                 </span>
               </div>
 
@@ -205,7 +205,7 @@ function ProductDetail() {
                   }}
                   onClick={handleAddToCart}
                 >
-                  {added ? "✓ Added to Cart!" : "🛒 Add to Cart"}
+                  {added ? "âœ“ Added to Cart!" : "ðŸ›’ Add to Cart"}
                 </button>
 
                 <button
@@ -213,7 +213,7 @@ function ProductDetail() {
                   style={{ flex: 1, minWidth: "160px", justifyContent: "center" }}
                   onClick={handleBuyNow}
                 >
-                  ⚡ Buy Now
+                  âš¡ Buy Now
                 </button>
               </div>
             </div>
@@ -224,7 +224,7 @@ function ProductDetail() {
         {related.length > 0 && (
           <div style={{ marginTop: "48px" }}>
             <div className="section-header">
-              <h2 className="section-title">🍽️ You Might Also Like</h2>
+              <h2 className="section-title">ðŸ½ï¸ You Might Also Like</h2>
             </div>
             <div className="product-grid">
               {related.map((p) => (
@@ -239,11 +239,11 @@ function ProductDetail() {
                   <div className="product-info">
                     <div className="product-name">{p.name}</div>
                     <div className="product-rating">
-                      <span className="stars">{"★".repeat(Math.floor(p.rating))}</span>
+                      <span className="stars">{"â˜…".repeat(Math.floor(p.rating))}</span>
                       <span className="rating-value">{p.rating}</span>
                     </div>
                     <div className="product-footer">
-                      <span className="product-price">₱{p.price}</span>
+                      <span className="product-price">â‚±{p.price}</span>
                       <button
                         className="btn-add-cart"
                         onClick={(e) => { e.stopPropagation(); relatedAdd(p); }}

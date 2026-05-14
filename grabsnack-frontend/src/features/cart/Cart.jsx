@@ -1,7 +1,7 @@
-import { useNavigate, Link } from "react-router-dom";
+﻿import { useNavigate, Link } from "react-router-dom";
 import Navbar from '../../shared/components/Navbar';
 import { useCart } from '../../shared/context/CartContext';
-import "../Style2.css";
+import "../../shared/styles/Style2.css";
 
 const SHIPPING_FEE = 50;
 
@@ -14,7 +14,7 @@ function Cart() {
       <Navbar />
 
       <div className="page-header">
-        <h1 className="page-title">🛒 Your Cart</h1>
+        <h1 className="page-title">ðŸ›’ Your Cart</h1>
         <p className="page-subtitle">
           {cart.length === 0
             ? "Your cart is empty"
@@ -24,19 +24,19 @@ function Cart() {
 
       <div className="content-section">
         {cart.length === 0 ? (
-          /* ─ Empty State ─ */
+          /* â”€ Empty State â”€ */
           <div className="empty-state">
-            <span className="empty-emoji">🛒</span>
+            <span className="empty-emoji">ðŸ›’</span>
             <h3 className="empty-title">Nothing in here yet!</h3>
             <p className="empty-text">
               Looks like you haven&apos;t added anything to your cart. Browse our delicious menu and start ordering!
             </p>
             <Link to="/dashboard" className="btn-primary" style={{ display: "inline-block", width: "auto", padding: "14px 40px" }}>
-              🍔 Browse Menu
+              ðŸ” Browse Menu
             </Link>
           </div>
         ) : (
-          /* ─ Cart Layout ─ */
+          /* â”€ Cart Layout â”€ */
           <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: "28px", alignItems: "start" }}>
 
             {/* Cart items card */}
@@ -53,7 +53,7 @@ function Cart() {
                   {/* Info */}
                   <div className="cart-item-info">
                     <div className="cart-item-name">{item.name}</div>
-                    <div className="cart-item-unit-price">₱{item.price} each</div>
+                    <div className="cart-item-unit-price">â‚±{item.price} each</div>
                   </div>
 
                   {/* Qty controls */}
@@ -63,7 +63,7 @@ function Cart() {
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       title="Decrease"
                     >
-                      −
+                      âˆ’
                     </button>
                     <span className="qty-value">{item.quantity}</span>
                     <button
@@ -76,7 +76,7 @@ function Cart() {
                   </div>
 
                   {/* Line total */}
-                  <span className="cart-item-price">₱{item.price * item.quantity}</span>
+                  <span className="cart-item-price">â‚±{item.price * item.quantity}</span>
 
                   {/* Remove */}
                   <button
@@ -84,7 +84,7 @@ function Cart() {
                     onClick={() => removeFromCart(item.id)}
                     title="Remove item"
                   >
-                    ✕
+                    âœ•
                   </button>
                 </div>
               ))}
@@ -98,11 +98,11 @@ function Cart() {
 
                   <div className="summary-row">
                     <span>Subtotal</span>
-                    <span>₱{cartTotal}</span>
+                    <span>â‚±{cartTotal}</span>
                   </div>
                   <div className="summary-row">
                     <span>Shipping Fee</span>
-                    <span>₱{SHIPPING_FEE}</span>
+                    <span>â‚±{SHIPPING_FEE}</span>
                   </div>
                   <div className="summary-row">
                     <span>Estimated Tax</span>
@@ -110,7 +110,7 @@ function Cart() {
                   </div>
                   <div className="summary-row total">
                     <span>Total</span>
-                    <span>₱{cartTotal + SHIPPING_FEE}</span>
+                    <span>â‚±{cartTotal + SHIPPING_FEE}</span>
                   </div>
 
                   <button
@@ -118,7 +118,7 @@ function Cart() {
                     style={{ marginTop: "8px" }}
                     onClick={() => navigate("/checkout")}
                   >
-                    🚀 Proceed to Checkout
+                    ðŸš€ Proceed to Checkout
                   </button>
 
                   <Link
@@ -126,7 +126,7 @@ function Cart() {
                     className="btn-outline"
                     style={{ display: "flex", justifyContent: "center", marginTop: "12px" }}
                   >
-                    ← Continue Shopping
+                    â† Continue Shopping
                   </Link>
                 </div>
               </div>
@@ -141,7 +141,7 @@ function Cart() {
                   flexWrap: "wrap",
                 }}
               >
-                {["🔒 Secure Checkout", "⚡ Fast Delivery", "✅ Freshly Made"].map((badge) => (
+                {["ðŸ”’ Secure Checkout", "âš¡ Fast Delivery", "âœ… Freshly Made"].map((badge) => (
                   <span
                     key={badge}
                     style={{

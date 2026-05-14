@@ -17,7 +17,7 @@ import Profile           from './features/profile/Profile';
 import GroupOrder        from './features/group-order/GroupOrder';
 
 // Global UI
-import CartDrawer from "./components/CartDrawer";
+import CartDrawer from "./features/cart/CartDrawer";
 import Toast      from './shared/components/Toast';
 
 // ── Route guards ──────────────────────────────────────────────────────────────

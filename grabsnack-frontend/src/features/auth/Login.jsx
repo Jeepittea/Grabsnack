@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useGrabSnack } from '../../shared/context/GrabSnackContext';
-import "../Style2.css";
+import "../../shared/styles/Style2.css";
 
 const FLOATING_EMOJIS = [
   { emoji: "🍔", style: { top: "8%",  left: "6%",  "--dur": "4.2s", "--delay": "0s" } },
@@ -18,6 +18,7 @@ const FLOATING_EMOJIS = [
 function Login() {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw]     = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState("");
 
@@ -39,7 +40,6 @@ function Login() {
         password,
       });
 
-      // Backend returns ApiResponse — actual user data is in response.data.data
       const userData = response.data.data;
       login(userData);
       navigate("/dashboard");
@@ -59,7 +59,6 @@ function Login() {
 
   return (
     <div className="auth-wrapper">
-      {/* Floating background emojis */}
       {FLOATING_EMOJIS.map(({ emoji, style }, i) => (
         <span key={i} className="floating-emoji" style={style}>
           {emoji}
@@ -67,14 +66,12 @@ function Login() {
       ))}
 
       <div className="auth-card">
-        {/* Brand */}
         <div className="auth-logo">🍔</div>
         <div className="auth-brand">GrabSnack</div>
 
         <h1 className="auth-title">Welcome Back, Hungry? 😋</h1>
         <p className="auth-subtitle">Sign in to order your favorites</p>
 
-        {/* Error */}
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleLogin}>
@@ -92,14 +89,34 @@ function Login() {
 
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-input"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPw ? "text" : "password"}
+                className="form-input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                style={{
+                  paddingRight: "44px",
+                  color: "#ffffff",
+                  backgroundColor: "rgba(57,61,82,0.8)",
+                  letterSpacing: showPw ? "normal" : "3px",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                style={{
+                  position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)",
+                  background: "none", border: "none", cursor: "pointer",
+                  fontSize: "18px", padding: 0, lineHeight: 1,
+                }}
+                title={showPw ? "Hide password" : "Show password"}
+              >
+                {showPw ? "🙈" : "👁️"}
+              </button>
+            </div>
           </div>
 
           <button
